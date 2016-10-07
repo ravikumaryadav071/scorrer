@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/first_teams_batting_score_card"
+                android:background="@drawable/cricket_scorecard_bg"
+                android:layout_marginTop="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginRight="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginLeft="@dimen/cricket_scorecard_list_margin">
+                <com.scorrer.ravi.scorrer.NonScrollListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/first_teams_batting_score"
+                    android:divider="@android:color/transparent"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/second_teams_bowling_score_card"
+                android:background="@drawable/cricket_scorecard_bg"
+                android:layout_marginTop="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginRight="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginLeft="@dimen/cricket_scorecard_list_margin">
+                <com.scorrer.ravi.scorrer.NonScrollListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/second_teams_bowling_score"
+                    android:divider="@android:color/transparent" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/second_teams_batting_score_card"
+                android:background="@drawable/cricket_scorecard_bg"
+                android:layout_marginTop="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginRight="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginLeft="@dimen/cricket_scorecard_list_margin">
+                <com.scorrer.ravi.scorrer.NonScrollListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/second_teams_batting_score"
+                    android:divider="@android:color/transparent" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/first_teams_bowling_score_card"
+                android:background="@drawable/cricket_scorecard_bg"
+                android:layout_marginTop="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginRight="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginLeft="@dimen/cricket_scorecard_list_margin"
+                android:layout_marginBottom="@dimen/cricket_scorecard_list_margin">
+                <com.scorrer.ravi.scorrer.NonScrollListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/first_teams_bowling_score"
+                    android:divider="@android:color/transparent" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

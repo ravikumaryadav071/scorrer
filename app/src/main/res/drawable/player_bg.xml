@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <size
+        android:height="20dp"
+        android:width="40dp">
+    </size>
+
+    <!-- view background color -->
+    <solid
+        android:color="@color/colorWhite" >
+    </solid>
+
+    <stroke
+        android:width="0dp"
+        android:color="#C5CAE9" >
+    </stroke>
+
+    <!-- If you want to add some padding -->
+    <padding
+        android:right="2dp"
+        android:bottom="2dp"
+        android:left="2dp"
+        android:top="2dp">
+    </padding>
+</shape>

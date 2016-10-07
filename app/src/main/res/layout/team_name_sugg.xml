@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/team_name_sugg_layout">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/sugg_textview_size"
+        android:textSize="@dimen/sugg_textview_text_size"
+        android:layout_margin="@dimen/sugg_textview_margin"
+        android:textColor="@color/colorBlack"
+        android:layout_gravity="center"
+        android:id="@+id/sugg_list_item"/>
+</LinearLayout>

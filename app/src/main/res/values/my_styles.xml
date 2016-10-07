@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MenuItems">
+        <item name="android:background">@drawable/menu_button</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:layout_height">170dp</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">25dp</item>
+    </style>
+    <style name="InputFields">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scrollHorizontally">true</item>
+    </style>
+</resources>

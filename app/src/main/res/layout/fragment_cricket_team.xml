@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/popup_screen_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.scorrer.ravi.scorrer.CricketTeamFragment">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/team_members_layout">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Anonymous"
+            android:textSize="@dimen/team_name_title"
+            android:gravity="center"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorWhite"
+            android:id="@+id/team_name_title" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/team_name_title"
+            android:id="@+id/fragment_toolbar">
+            <AutoCompleteTextView
+                style="@style/InputFields"
+                android:id="@+id/team_mate"
+                android:layout_weight="1"
+                android:hint="@string/team_mate_hint"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_team_mate_button"
+                android:background="@color/colorButton"
+                android:textColor="@color/colorWhite"
+                android:id="@+id/add_team_mate"/>
+        </LinearLayout>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/players_list"
+            android:layout_below="@+id/fragment_toolbar"
+            android:layout_marginBottom="@dimen/players_list_margin"
+            android:layout_marginTop="@dimen/players_list_margin"></ListView>
+    </RelativeLayout>
+</RelativeLayout>
