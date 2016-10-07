@@ -336,7 +336,7 @@ public class SoccerScoreCardFragment extends Fragment {
 
         @Override
         public long getItemId(int position) {
-            return 1;
+            return 0;
         }
 
         @Override
