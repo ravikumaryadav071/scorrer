@@ -165,12 +165,12 @@ public class SoccerScoreCardFragment extends Fragment {
 
                 TextView ftn = (TextView) view.findViewById(R.id.first_team_name);
                 ftn.setText(SoccerTeamFragment.team);
-                TextView stn = (TextView) view.findViewById(R.id.first_team_name);
+                TextView stn = (TextView) view.findViewById(R.id.second_team_name);
                 stn.setText(SoccerTeamFragment.Oteam);
 
                 TextView ftnp = (TextView) view.findViewById(R.id.first_team_name_poss);
                 ftnp.setText(SoccerTeamFragment.team);
-                TextView stnp = (TextView) view.findViewById(R.id.first_team_name_poss);
+                TextView stnp = (TextView) view.findViewById(R.id.second_team_name_poss);
                 stnp.setText(SoccerTeamFragment.Oteam);
 
                 final TextView ftp = (TextView) view.findViewById(R.id.first_team_poss);
@@ -178,10 +178,10 @@ public class SoccerScoreCardFragment extends Fragment {
 
                 if(possession==1){
                     stp.animate().translationX(-stp.getWidth());
-                    stp.setVisibility(View.GONE);
+                    stp.setVisibility(View.INVISIBLE);
                 }else{
                     ftp.animate().translationX(ftp.getWidth());
-                    ftp.setVisibility(View.GONE);
+                    ftp.setVisibility(View.INVISIBLE);
                 }
 
                 ftp.setOnClickListener(new View.OnClickListener() {
@@ -192,7 +192,7 @@ public class SoccerScoreCardFragment extends Fragment {
                             ftp.setVisibility(View.VISIBLE);
                             ftp.animate().translationX(0);
                             stp.animate().translationX(-stp.getWidth());
-                            stp.setVisibility(View.GONE);
+                            stp.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
@@ -200,12 +200,12 @@ public class SoccerScoreCardFragment extends Fragment {
                 stp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(possession==2){
-                            possession = 1;
+                        if(possession==1){
+                            possession = 2;
                             stp.setVisibility(View.VISIBLE);
                             stp.animate().translationX(0);
                             ftp.animate().translationX(ftp.getWidth());
-                            ftp.setVisibility(View.GONE);
+                            ftp.setVisibility(View.INVISIBLE);
                         }
                     }
                 });
