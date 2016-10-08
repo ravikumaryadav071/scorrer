@@ -103,11 +103,6 @@ public class SoccerScoreCardFragment extends Fragment {
             data = new HashMap<String, Integer>();
             data.put("yellow_cards", 0);
             teamStats.add(data);
-            if (SoccerTeamFragment.toss.equals("F")) {
-                possession = 1;
-            } else {
-                possession = 2;
-            }
             for (int i=0; i<SoccerTeamFragment.players.size(); i++) {
                 data = new HashMap<String, Integer>();
                 data.put("goals", 0);
@@ -151,6 +146,11 @@ public class SoccerScoreCardFragment extends Fragment {
             }
             halfTime = sm+":"+ss;
             fullTime = SoccerTeamFragment.time+":00";
+            if (SoccerTeamFragment.toss.equals("F")) {
+                possession = 1;
+            } else {
+                possession = 2;
+            }
         }
     }
 
@@ -162,6 +162,48 @@ public class SoccerScoreCardFragment extends Fragment {
             case 1:
                 view = inflater.inflate(R.layout.soccer_score_card, null);
                 time = (TextView) view.findViewById(R.id.time);
+
+                TextView ftnp = (TextView) view.findViewById(R.id.first_team_name_poss);
+                ftnp.setText(SoccerTeamFragment.team);
+                TextView stnp = (TextView) view.findViewById(R.id.first_team_name_poss);
+                stnp.setText(SoccerTeamFragment.Oteam);
+
+                final TextView ftp = (TextView) view.findViewById(R.id.first_team_poss);
+                final TextView stp = (TextView) view.findViewById(R.id.second_team_poss);
+
+                if(possession==1){
+                    stp.animate().translationX(-stp.getWidth());
+                    stp.setVisibility(View.GONE);
+                }else{
+                    ftp.animate().translationX(ftp.getWidth());
+                    ftp.setVisibility(View.GONE);
+                }
+
+                ftp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(possession==2){
+                            possession = 1;
+                            ftp.setVisibility(View.VISIBLE);
+                            ftp.animate().translationX(0);
+                            stp.animate().translationX(-stp.getWidth());
+                            stp.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+                stp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(possession==2){
+                            possession = 1;
+                            stp.setVisibility(View.VISIBLE);
+                            stp.animate().translationX(0);
+                            ftp.animate().translationX(ftp.getWidth());
+                            ftp.setVisibility(View.GONE);
+                        }
+                    }
+                });
 
                 final Handler handler = new Handler(){
                     @Override
