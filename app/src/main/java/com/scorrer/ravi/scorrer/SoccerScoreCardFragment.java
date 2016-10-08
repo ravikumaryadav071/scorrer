@@ -163,6 +163,11 @@ public class SoccerScoreCardFragment extends Fragment {
                 view = inflater.inflate(R.layout.soccer_score_card, null);
                 time = (TextView) view.findViewById(R.id.time);
 
+                TextView ftn = (TextView) view.findViewById(R.id.first_team_name);
+                ftn.setText(SoccerTeamFragment.team);
+                TextView stn = (TextView) view.findViewById(R.id.first_team_name);
+                stn.setText(SoccerTeamFragment.Oteam);
+
                 TextView ftnp = (TextView) view.findViewById(R.id.first_team_name_poss);
                 ftnp.setText(SoccerTeamFragment.team);
                 TextView stnp = (TextView) view.findViewById(R.id.first_team_name_poss);
@@ -242,6 +247,12 @@ public class SoccerScoreCardFragment extends Fragment {
                                             }
                                             String sm = String.valueOf(m);
                                             String ss = String.valueOf(s);
+                                            if(sm.length()==1){
+                                                sm = "0"+sm;
+                                            }
+                                            if(ss.length()==1){
+                                                ss = "0"+ss;
+                                            }
                                             String stime = sm+":"+ss;
 
                                             Message msg = handler.obtainMessage();
