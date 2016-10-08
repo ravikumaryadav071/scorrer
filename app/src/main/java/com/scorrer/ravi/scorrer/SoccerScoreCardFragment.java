@@ -11,6 +11,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,12 +21,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.zip.Inflater;
 
 public class SoccerScoreCardFragment extends Fragment {
@@ -37,10 +43,22 @@ public class SoccerScoreCardFragment extends Fragment {
     public static ArrayList<String> OonField = new ArrayList<String>();
     private static PlayerListAdapter fadapter;
     private static PlayerListAdapter sadapter;
-    private View movedView = null;
     private ArrayList<String> highlightType = new ArrayList<String>();
     private ArrayList<String> highlightText = new ArrayList<String>();;
     private ArrayList<String> highlightTime = new ArrayList<String>();;
+    private static ArrayList<HashMap<String, Integer>> teamStats = new ArrayList<HashMap<String, Integer>>();
+    private static HashMap<String, HashMap<String, Integer>> ftPlayersStats = new HashMap<String, HashMap<String, Integer>>();
+    private static HashMap<String, HashMap<String, Integer>> stPlayersStats = new HashMap<String, HashMap<String, Integer>>();
+    private static HashMap<String, View> ftPlayersGroundView = new HashMap<String, View>();
+    private static HashMap<String, View> stPlayersGroundView = new HashMap<String, View>();
+    private static String halfTime;
+    private static String fullTime;
+    private static boolean started = false;
+    private static int teamSize = 0;
+    private int half = 1;
+    private int possession;
+    private View movedView = null;
+    private TextView time;
 
     public static SoccerScoreCardFragment newInstance(int page_no){
         Bundle bundle = new Bundle();
@@ -54,6 +72,86 @@ public class SoccerScoreCardFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         page_no = getArguments().getInt(ARG);
+        if(teamStats.size()==0) {
+            HashMap<String, Integer> data = new HashMap<String, Integer>();
+            data.put("possess", 0);
+            data = new HashMap<String, Integer>();
+            data.put("goals", 0);
+            data = new HashMap<String, Integer>();
+            data.put("corners", 0);
+            data = new HashMap<String, Integer>();
+            data.put("off_sides", 0);
+            data = new HashMap<String, Integer>();
+            data.put("fouls", 0);
+            data = new HashMap<String, Integer>();
+            data.put("red_cards", 0);
+            data = new HashMap<String, Integer>();
+            data.put("yellow_cards", 0);
+            teamStats.add(data);
+            data = new HashMap<String, Integer>();
+            data.put("possess", 0);
+            data = new HashMap<String, Integer>();
+            data.put("goals", 0);
+            data = new HashMap<String, Integer>();
+            data.put("corners", 0);
+            data = new HashMap<String, Integer>();
+            data.put("off_sides", 0);
+            data = new HashMap<String, Integer>();
+            data.put("fouls", 0);
+            data = new HashMap<String, Integer>();
+            data.put("red_cards", 0);
+            data = new HashMap<String, Integer>();
+            data.put("yellow_cards", 0);
+            teamStats.add(data);
+            if (SoccerTeamFragment.toss.equals("F")) {
+                possession = 1;
+            } else {
+                possession = 2;
+            }
+            for (int i=0; i<SoccerTeamFragment.players.size(); i++) {
+                data = new HashMap<String, Integer>();
+                data.put("goals", 0);
+                data = new HashMap<String, Integer>();
+                data.put("assists", 0);
+                data = new HashMap<String, Integer>();
+                data.put("off_sides", 0);
+                data = new HashMap<String, Integer>();
+                data.put("fouls", 0);
+                data = new HashMap<String, Integer>();
+                data.put("red_cards", 0);
+                data = new HashMap<String, Integer>();
+                data.put("yellow_cards", 0);
+                ftPlayersStats.put(SoccerTeamFragment.players.get(i), data);
+            }
+            for (int i=0; i<SoccerTeamFragment.Oplayers.size(); i++) {
+                data = new HashMap<String, Integer>();
+                data.put("goals", 0);
+                data = new HashMap<String, Integer>();
+                data.put("assists", 0);
+                data = new HashMap<String, Integer>();
+                data.put("off_sides", 0);
+                data = new HashMap<String, Integer>();
+                data.put("fouls", 0);
+                data = new HashMap<String, Integer>();
+                data.put("red_cards", 0);
+                data = new HashMap<String, Integer>();
+                data.put("yellow_cards", 0);
+                stPlayersStats.put(SoccerTeamFragment.Oplayers.get(i), data);
+            }
+            float temp = Float.valueOf(SoccerTeamFragment.time)/(float) 2;
+            int m = (int) Math.floor(temp);
+            int s = (int) ((temp-(float) m)*60);
+            String sm = String.valueOf(m);
+            String ss = String.valueOf(s);
+            if(sm.length()==1){
+                sm = "0"+sm;
+            }
+            if(ss.length()==1){
+                ss = "0"+ss;
+            }
+            halfTime = sm+":"+ss;
+            fullTime = SoccerTeamFragment.time+":00";
+        }
     }
 
     @Nullable
@@ -63,6 +161,73 @@ public class SoccerScoreCardFragment extends Fragment {
         switch (page_no){
             case 1:
                 view = inflater.inflate(R.layout.soccer_score_card, null);
+                time = (TextView) view.findViewById(R.id.time);
+
+                final Handler handler = new Handler(){
+                    @Override
+                    public void handleMessage(Message msg) {
+                        time.setText(msg.getData().getString("time"));
+                    }
+                };
+
+                final Button start = (Button) view.findViewById(R.id.start_pause);
+                start.setOnClickListener(new View.OnClickListener() {
+                    Timer timer;
+                    @Override
+                    public void onClick(View v) {
+                        if(onField.size()>0 && OonField.size()>0) {
+                            if(teamSize==0){
+                                if(onField.size()==OonField.size()){
+                                    teamSize = onField.size();
+                                }
+                            }
+                            if(teamSize!=0) {
+                                if (!started) {
+                                    start.setText("PAUSE");
+                                    started = true;
+                                    timer = new Timer();
+                                    timer.scheduleAtFixedRate(new TimerTask(){
+                                        @Override
+                                        public void run() {
+                                            String sTemp = time.getText().toString();
+                                            String temp[] = sTemp.split(":");
+                                            int m = Integer.valueOf(temp[0]);
+                                            int s = Integer.valueOf(temp[1]);
+                                            s++;
+                                            if(s==60){
+                                                s=0;
+                                                m++;
+                                            }
+                                            String sm = String.valueOf(m);
+                                            String ss = String.valueOf(s);
+                                            String stime = sm+":"+ss;
+
+                                            Message msg = handler.obtainMessage();
+                                            Bundle b = new Bundle();
+                                            if(stime.equals(halfTime)){
+
+                                            }else if(stime.equals(fullTime)){
+
+                                            }
+                                            b.putString("time", stime);
+                                            msg.setData(b);
+                                            handler.sendMessage(msg);
+                                        }
+                                    }, 0, 1000);
+                                } else {
+                                    start.setText("START");
+                                    started = false;
+                                    timer.cancel();
+                                    timer = null;
+                                }
+                            }else{
+                                Toast.makeText(getContext(), "Both teams must have equal players on field.", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            Toast.makeText(getContext(), "Place players on field.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 break;
             case 2:
                 view = inflater.inflate(R.layout.first_team_formation, null);
@@ -341,8 +506,29 @@ public class SoccerScoreCardFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            View view = null;
+            if(convertView==null){
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.soccer_highlights, null);
+            }else{
+                view = convertView;
+            }
+            TextView commentType = (TextView) view.findViewById(R.id.comment_type);
+            TextView comment = (TextView) view.findViewById(R.id.comment);
+            TextView commentTime = (TextView) view.findViewById(R.id.comment_time);
+            commentType.setText(highlightType.get(position));
+            comment.setText(highlightText.get(position));
+            commentTime.setText(highlightTime.get(position));
+            return view;
         }
+
+        public void notifyAdapter(ArrayList<String> highlightType, ArrayList<String> highlightText, ArrayList<String> highlightTime){
+            this.highlightType = highlightType;
+            this.highlightText = highlightText;
+            this.highlightTime = highlightTime;
+            notifyDataSetChanged();
+        }
+
     }
 
     class PlayerListAdapter extends BaseAdapter {
