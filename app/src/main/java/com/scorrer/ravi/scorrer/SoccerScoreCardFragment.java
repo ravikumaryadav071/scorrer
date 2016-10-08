@@ -163,6 +163,46 @@ public class SoccerScoreCardFragment extends Fragment {
                 view = inflater.inflate(R.layout.soccer_score_card, null);
                 time = (TextView) view.findViewById(R.id.time);
 
+                TextView ftnp = (TextView) view.findViewById(R.id.first_team_name_poss);
+                ftnp.setText(SoccerTeamFragment.team);
+                TextView stnp = (TextView) view.findViewById(R.id.second_team_name_poss);
+                stnp.setText(SoccerTeamFragment.Oteam);
+
+                final TextView ftp = (TextView) view.findViewById(R.id.first_team_poss);
+                final TextView stp = (TextView) view.findViewById(R.id.second_team_poss);
+
+                if(possession==1){
+                    stp.setVisibility(View.INVISIBLE);
+                }else{
+                    ftp.setVisibility(View.INVISIBLE);
+                }
+
+                ftp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(possession==2){
+                            possession = 1;
+                            ftp.setVisibility(View.VISIBLE);
+                            ftp.animate().translationX(0);
+                            stp.animate().translationX(-stp.getWidth());
+                            stp.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+
+                stp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(possession==1){
+                            possession = 2;
+                            stp.setVisibility(View.VISIBLE);
+                            stp.animate().translationX(0);
+                            ftp.animate().translationX(ftp.getWidth());
+                            ftp.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+
                 final Handler handler = new Handler(){
                     @Override
                     public void handleMessage(Message msg) {
@@ -228,6 +268,17 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                     }
                 });
+
+                Button goal = (Button) view.findViewById(R.id.goal);
+                goal.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+
+                        }
+                    }
+                });
+
                 break;
             case 2:
                 view = inflater.inflate(R.layout.first_team_formation, null);
