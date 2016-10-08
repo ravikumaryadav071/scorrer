@@ -1,6 +1,7 @@
 package com.scorrer.ravi.scorrer;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -179,42 +180,21 @@ public class SoccerScoreCardFragment extends Fragment {
 
                 if(possession==1){
                     stp.animate().translationX(-stp.getWidth());
-                    stp.setVisibility(View.GONE);
+                    stp.setVisibility(View.INVISIBLE);
                 }else{
                     ftp.animate().translationX(ftp.getWidth());
-                    ftp.setVisibility(View.GONE);
+                    ftp.setVisibility(View.INVISIBLE);
                 }
 
                 ftnp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("here3", ""+possession);
                         if(possession==2){
-                            Log.e("here", "4");
                             possession = 1;
                             ftp.setVisibility(View.VISIBLE);
                             ftp.animate().translationX(0);
-                            stp.animate().translationX(-stp.getWidth()).setListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    stp.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            });
+                            stp.setVisibility(View.VISIBLE);
+                            stp.animate().translationX(-stp.getWidth());
                         }
                     }
                 });
@@ -222,33 +202,12 @@ public class SoccerScoreCardFragment extends Fragment {
                 stnp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("here1", ""+possession);
                         if(possession==1){
-                            Log.e("here", "2");
                             possession = 2;
                             stp.setVisibility(View.VISIBLE);
                             stp.animate().translationX(0);
-                            ftp.animate().translationX(ftp.getWidth()).setListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    ftp.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            });
+                            ftp.setVisibility(View.VISIBLE);
+                            ftp.animate().translationX(ftp.getWidth());
                         }
                     }
                 });
