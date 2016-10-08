@@ -1,5 +1,6 @@
 package com.scorrer.ravi.scorrer;
 
+import android.animation.Animator;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -55,8 +56,8 @@ public class SoccerScoreCardFragment extends Fragment {
     private static String fullTime;
     private static boolean started = false;
     private static int teamSize = 0;
+    private static int possession;
     private int half = 1;
-    private int possession;
     private View movedView = null;
     private TextView time;
 
@@ -178,34 +179,76 @@ public class SoccerScoreCardFragment extends Fragment {
 
                 if(possession==1){
                     stp.animate().translationX(-stp.getWidth());
-                    stp.setVisibility(View.INVISIBLE);
+                    stp.setVisibility(View.GONE);
                 }else{
                     ftp.animate().translationX(ftp.getWidth());
-                    ftp.setVisibility(View.INVISIBLE);
+                    ftp.setVisibility(View.GONE);
                 }
 
-                ftp.setOnClickListener(new View.OnClickListener() {
+                ftnp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Log.e("here3", ""+possession);
                         if(possession==2){
+                            Log.e("here", "4");
                             possession = 1;
                             ftp.setVisibility(View.VISIBLE);
                             ftp.animate().translationX(0);
-                            stp.animate().translationX(-stp.getWidth());
-                            stp.setVisibility(View.INVISIBLE);
+                            stp.animate().translationX(-stp.getWidth()).setListener(new Animator.AnimatorListener() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    stp.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animator animation) {
+
+                                }
+                            });
                         }
                     }
                 });
 
-                stp.setOnClickListener(new View.OnClickListener() {
+                stnp.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Log.e("here1", ""+possession);
                         if(possession==1){
+                            Log.e("here", "2");
                             possession = 2;
                             stp.setVisibility(View.VISIBLE);
                             stp.animate().translationX(0);
-                            ftp.animate().translationX(ftp.getWidth());
-                            ftp.setVisibility(View.INVISIBLE);
+                            ftp.animate().translationX(ftp.getWidth()).setListener(new Animator.AnimatorListener() {
+                                @Override
+                                public void onAnimationStart(Animator animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    ftp.setVisibility(View.GONE);
+                                }
+
+                                @Override
+                                public void onAnimationCancel(Animator animation) {
+
+                                }
+
+                                @Override
+                                public void onAnimationRepeat(Animator animation) {
+
+                                }
+                            });
                         }
                     }
                 });
