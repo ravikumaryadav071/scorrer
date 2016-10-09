@@ -470,12 +470,14 @@ public class SoccerScoreCardFragment extends Fragment {
                                     playerOnGround.setOnLongClickListener(new View.OnLongClickListener() {
                                         @Override
                                         public boolean onLongClick(View v) {
-                                            movedView = v;
-                                            movedView.setVisibility(View.GONE);
-                                            ClipData.Item data = new ClipData.Item(item.getText());
-                                            ClipData dragData = new ClipData(item.getText(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
-                                            ShadowBuilder sb = new ShadowBuilder(playerOnGround, getContext());
-                                            v.startDrag(dragData, sb, null, 0);
+                                            if(!finished) {
+                                                movedView = v;
+                                                movedView.setVisibility(View.GONE);
+                                                ClipData.Item data = new ClipData.Item(item.getText());
+                                                ClipData dragData = new ClipData(item.getText(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
+                                                ShadowBuilder sb = new ShadowBuilder(playerOnGround, getContext());
+                                                v.startDrag(dragData, sb, null, 0);
+                                            }
                                             return true;
                                         }
                                     });
@@ -609,12 +611,14 @@ public class SoccerScoreCardFragment extends Fragment {
                                     playerOnGround.setOnLongClickListener(new View.OnLongClickListener() {
                                         @Override
                                         public boolean onLongClick(View v) {
-                                            movedView = v;
-                                            movedView.setVisibility(View.GONE);
-                                            ClipData.Item data = new ClipData.Item(item.getText());
-                                            ClipData dragData = new ClipData(item.getText(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
-                                            ShadowBuilder sb = new ShadowBuilder(playerOnGround, getContext());
-                                            v.startDrag(dragData, sb, null, 0);
+                                            if(!finished) {
+                                                movedView = v;
+                                                movedView.setVisibility(View.GONE);
+                                                ClipData.Item data = new ClipData.Item(item.getText());
+                                                ClipData dragData = new ClipData(item.getText(), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
+                                                ShadowBuilder sb = new ShadowBuilder(playerOnGround, getContext());
+                                                v.startDrag(dragData, sb, null, 0);
+                                            }
                                             return true;
                                         }
                                     });
