@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,7 +17,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -24,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -61,6 +66,7 @@ public class SoccerScoreCardFragment extends Fragment {
     private int half = 1;
     private View movedView = null;
     private TextView time;
+    private String extraTime = "00:00";
 
     public static SoccerScoreCardFragment newInstance(int page_no){
         Bundle bundle = new Bundle();
@@ -177,13 +183,23 @@ public class SoccerScoreCardFragment extends Fragment {
 
                 final TextView ftp = (TextView) view.findViewById(R.id.first_team_poss);
                 final TextView stp = (TextView) view.findViewById(R.id.second_team_poss);
+                final TextView extraTimetv = (TextView) view.findViewById(R.id.extra_time);
+                final Button start = (Button) view.findViewById(R.id.start_pause);
 
                 if(possession==1){
+//                    stp.animate().translationX(-stp.getWidth());
+//                    stp.setVisibility(View.INVISIBLE);
+                    ftp.setVisibility(View.VISIBLE);
+                    ftp.animate().translationX(0);
+                    stp.setVisibility(View.VISIBLE);
                     stp.animate().translationX(-stp.getWidth());
-                    stp.setVisibility(View.INVISIBLE);
                 }else{
+//                    ftp.animate().translationX(ftp.getWidth());
+//                    ftp.setVisibility(View.INVISIBLE);
+                    stp.setVisibility(View.VISIBLE);
+                    stp.animate().translationX(0);
+                    ftp.setVisibility(View.VISIBLE);
                     ftp.animate().translationX(ftp.getWidth());
-                    ftp.setVisibility(View.INVISIBLE);
                 }
 
                 ftnp.setOnClickListener(new View.OnClickListener() {
@@ -215,11 +231,48 @@ public class SoccerScoreCardFragment extends Fragment {
                 final Handler handler = new Handler(){
                     @Override
                     public void handleMessage(Message msg) {
-                        time.setText(msg.getData().getString("time"));
+                        if(msg.getData().containsKey("extraTime")){
+                           extraTimetv.setText(msg.getData().getString("extraTime"));
+                        }
+                        if(msg.getData().containsKey("startExtra")){
+                            start.callOnClick();
+                            extraTimetv.setText("00:00");
+                            final EditText input = new EditText(getContext());
+                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT);
+                            input.setLayoutParams(lp);
+                            new AlertDialog.Builder(getContext())
+                                    .setTitle("Extra Time")
+                                    .setMessage("Time")
+                                    .setIcon(R.drawable.edit_icon)
+                                    .setCancelable(false)
+                                    .setView(input)
+                                    .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if(!input.getText().toString().trim().equals("")){
+                                                extraTime = input.getText().toString().trim();
+                                                if(extraTime.length()==1){
+                                                    extraTime = "0"+extraTime+":00";
+                                                }
+                                            }
+                                        }
+                                    }).show();
+                        }
+                        if(msg.getData().containsKey("endExtra")){
+                            start.callOnClick();
+                            extraTimetv.setText("");
+                            if(half==1){
+                                half=2;
+                            }
+                        }
+                        if(msg.getData().containsKey("time")){
+                            time.setText(msg.getData().getString("time"));
+                        }
                     }
                 };
 
-                final Button start = (Button) view.findViewById(R.id.start_pause);
                 start.setOnClickListener(new View.OnClickListener() {
                     Timer timer;
                     @Override
@@ -240,6 +293,12 @@ public class SoccerScoreCardFragment extends Fragment {
                                         public void run() {
                                             String sTemp = time.getText().toString();
                                             String temp[] = sTemp.split(":");
+                                            String sxTemp = extraTimetv.getText().toString();
+                                            if (sTemp.equals(halfTime) || sTemp.equals(fullTime)) {
+                                                if(!extraTime.equals("00:00")) {
+                                                    temp = sxTemp.split(":");
+                                                }
+                                            }
                                             int m = Integer.valueOf(temp[0]);
                                             int s = Integer.valueOf(temp[1]);
                                             s++;
@@ -256,15 +315,26 @@ public class SoccerScoreCardFragment extends Fragment {
                                                 ss = "0"+ss;
                                             }
                                             String stime = sm+":"+ss;
-
                                             Message msg = handler.obtainMessage();
                                             Bundle b = new Bundle();
-                                            if(stime.equals(halfTime)){
 
-                                            }else if(stime.equals(fullTime)){
-
+                                            if(sTemp.equals(halfTime) || sTemp.equals(fullTime)){
+                                                if(!extraTime.equals("00:00")) {
+                                                    if (stime.equals(extraTime)) {
+                                                        b.putString("endExtra", "extraTime");
+                                                        b.putString("extraTime", stime);
+                                                    } else {
+                                                        b.putString("extraTime", stime);
+                                                    }
+                                                }
                                             }
-                                            b.putString("time", stime);
+
+                                            if((stime.equals(halfTime)||stime.equals(fullTime)) && extraTime.equals("00:00")){
+                                                b.putString("startExtra", "extraTime");
+                                                b.putString("time", stime);
+                                            }else{
+                                                b.putString("time", stime);
+                                            }
                                             msg.setData(b);
                                             handler.sendMessage(msg);
                                         }
