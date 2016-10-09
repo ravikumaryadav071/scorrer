@@ -483,7 +483,91 @@ public class SoccerScoreCardFragment extends Fragment {
                 redCard.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                int r = teamStats.get(0).get("red_cards");
+                                r++;
+                                teamStats.get(0).remove("red_cards");
+                                teamStats.get(0).put("red_cards", r);
+                                getPlayer("RED CARD", possession);
+                                stnp.callOnClick();
+                            }else{
+                                int r = teamStats.get(1).get("red_cards");
+                                r++;
+                                teamStats.get(1).remove("red_cards");
+                                teamStats.get(1).put("red_cards", r);
+                                getPlayer("RED CARD", possession);
+                                ftnp.callOnClick();
+                            }
+                            statsAdapter.notifyAdapter(teamStats);
+                        }
+                    }
+                });
+
+                yellowCard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                int y = teamStats.get(0).get("yellow_cards");
+                                y++;
+                                teamStats.get(0).remove("yellow_cards");
+                                teamStats.get(0).put("yellow_cards", y);
+                                getPlayer("YELLOW CARD", possession);
+                                stnp.callOnClick();
+                            }else{
+                                int y = teamStats.get(1).get("yellow_cards");
+                                y++;
+                                teamStats.get(1).remove("yellow_cards");
+                                teamStats.get(1).put("yellow_cards", y);
+                                getPlayer("YELLOW CARD", possession);
+                                ftnp.callOnClick();
+                            }
+                            statsAdapter.notifyAdapter(teamStats);
+                        }
+                    }
+                });
+
+                offSide.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                int o = teamStats.get(0).get("off_side");
+                                o++;
+                                teamStats.get(0).remove("off_side");
+                                teamStats.get(0).put("off_side", o);
+                                getPlayer("OFF SIDE", possession);
+                                stnp.callOnClick();
+                            }else{
+                                int o = teamStats.get(1).get("off_side");
+                                o++;
+                                teamStats.get(1).remove("off_side");
+                                teamStats.get(1).put("off_side", o);
+                                getPlayer("OFF SIDE", possession);
+                                ftnp.callOnClick();
+                            }
+                            statsAdapter.notifyAdapter(teamStats);
+                        }
+                    }
+                });
+
+                throwIn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        commentTime = time.getText().toString();
+                        commentText = "Ball has gone out of play. Throw in.";
+                        commentType = "T";
+                        highlightTime.add(0, commentTime);
+                        highlightText.add(0,commentText);
+                        highlightType.add(0, commentType);
+                        highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
+                        commentTime = "";
+                        commentText = "";
+                        commentType = "";
                     }
                 });
                 break;
