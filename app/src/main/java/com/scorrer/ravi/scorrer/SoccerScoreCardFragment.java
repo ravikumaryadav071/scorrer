@@ -51,6 +51,7 @@ public class SoccerScoreCardFragment extends Fragment {
     public static ArrayList<String> OonField = new ArrayList<String>();
     private static PlayerListAdapter fadapter;
     private static PlayerListAdapter sadapter;
+    private HighLightAdapter highlightAdapter;
     private ArrayList<String> highlightType = new ArrayList<String>();
     private ArrayList<String> highlightText = new ArrayList<String>();
     private ArrayList<String> highlightTime = new ArrayList<String>();
@@ -174,8 +175,8 @@ public class SoccerScoreCardFragment extends Fragment {
         switch (page_no){
             case 1:
                 view = inflater.inflate(R.layout.soccer_score_card, null);
+                highlightAdapter = new HighLightAdapter(highlightType, highlightText, highlightTime);
                 time = (TextView) view.findViewById(R.id.time);
-
                 TextView ftn = (TextView) view.findViewById(R.id.first_team_name);
                 ftn.setText(SoccerTeamFragment.team);
                 TextView stn = (TextView) view.findViewById(R.id.second_team_name);
@@ -755,6 +756,7 @@ public class SoccerScoreCardFragment extends Fragment {
                         }else{
                             commentText += SoccerTeamFragment.Oteam;
                         }
+                        getPlayer("GOAL ASSISTANT", possess);
                     }else if(action.equals("GOAL ASSISTANT")){
                         commentText = " by assist of "+nextPlayer.get(0)+".";
                         commentType = "G";
@@ -789,17 +791,16 @@ public class SoccerScoreCardFragment extends Fragment {
                             commentText = "Second yellow makes it red for "+nextPlayer.get(0) + ".";
                         }
                         commentType = "Y";
-                        index = "red_cards";
                         if(possess==1){
-                            int value1 = ftPlayersStats.get(nextPlayer.get(0)).get(index);
+                            int value1 = ftPlayersStats.get(nextPlayer.get(0)).get("red_cards");
                             value1++;
-                            ftPlayersStats.get(nextPlayer.get(0)).remove(index);
-                            ftPlayersStats.get(nextPlayer.get(0)).put(index, value);
+                            ftPlayersStats.get(nextPlayer.get(0)).remove("red_cards");
+                            ftPlayersStats.get(nextPlayer.get(0)).put("red_cards", value1);
                         }else{
-                            int value1 = stPlayersStats.get(nextPlayer.get(0)).get(index);
+                            int value1 = stPlayersStats.get(nextPlayer.get(0)).get("red_cards");
                             value1++;
-                            stPlayersStats.get(nextPlayer.get(0)).remove(index);
-                            stPlayersStats.get(nextPlayer.get(0)).put(index, value);
+                            stPlayersStats.get(nextPlayer.get(0)).remove("red_cards");
+                            stPlayersStats.get(nextPlayer.get(0)).put("red_cards", value1);
                         }
                     }else if(action.equals("FOUL")){
                         commentText = "Foul by "+nextPlayer.get(0)+".";
@@ -824,9 +825,19 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                     }
 
+                    highlightTime.add(0, commentTime);
+                    highlightText.add(0,commentText);
+                    highlightType.add(0, commentType);
+                    highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
+                    commentTime = "";
+                    commentText = "";
+                    commentType = "";
+                    nextPlayer.clear();
                 }else{
                     if(action.equals("GOAL ASSISTANT")){
                         alert.cancel();
+                        commentText += ".";
+                        commentType = "G";
                     }else {
                         Toast.makeText(getContext(), "Can select max 1 player.", Toast.LENGTH_SHORT).show();
                     }
@@ -937,6 +948,43 @@ public class SoccerScoreCardFragment extends Fragment {
             commentType.setText(highlightType.get(position));
             comment.setText(highlightText.get(position));
             commentTime.setText(highlightTime.get(position));
+            if(highlightType.get(position).equals("G")){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        commentType.setBackground(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_green_bg, getActivity().getTheme()));
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            commentType.setBackground(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_green_bg));
+                        }
+                    }
+                }else{
+                    commentType.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_green_bg));
+                }
+            }else if(highlightType.get(position).equals("Y")){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        commentType.setBackground(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_yellow_bg, getActivity().getTheme()));
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            commentType.setBackground(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_yellow_bg));
+                        }
+                    }
+                }else{
+                    commentType.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_yellow_bg));
+                }
+            }else if(highlightType.get(position).equals("R")){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        commentType.setBackground(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_red_bg, getActivity().getTheme()));
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            commentType.setBackground(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_red_bg));
+                        }
+                    }
+                }else{
+                    commentType.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.soccer_commentry_red_bg));
+                }
+            }
             return view;
         }
 
