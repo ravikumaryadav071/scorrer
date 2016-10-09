@@ -34,6 +34,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.FileNameMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
@@ -71,7 +72,7 @@ public class SoccerScoreCardFragment extends Fragment {
     private View movedView = null;
     private TextView time;
     private String extraTime = "00:00";
-
+    private static boolean finished = false;
     public static SoccerScoreCardFragment newInstance(int page_no){
         Bundle bundle = new Bundle();
         bundle.putInt(ARG, page_no);
@@ -267,6 +268,7 @@ public class SoccerScoreCardFragment extends Fragment {
                                 half=2;
                             }else if(half==2){
                                 start.setEnabled(false);
+                                finished = true;
                             }
                         }
                         if(msg.getData().containsKey("time")){
@@ -387,7 +389,7 @@ public class SoccerScoreCardFragment extends Fragment {
                 tn1.setText(SoccerTeamFragment.team+"'s Formation");
 
                 ListView ftList = (ListView) view.findViewById(R.id.players_list);
-                fadapter = new PlayerListAdapter(players);
+                fadapter = new PlayerListAdapter(players, 1);
                 ftList.setAdapter(fadapter);
                 ftList.setOnDragListener(new View.OnDragListener() {
                     @Override
@@ -447,6 +449,22 @@ public class SoccerScoreCardFragment extends Fragment {
                                     tv.setText(item.getText());
                                     playerOnGround.setX(event.getX());
                                     playerOnGround.setY(event.getY());
+
+                                    int yellow = ftPlayersStats.get(item.getText()).get("yellow_cards");
+                                    if(yellow!=0){
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                                tv.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg, getActivity().getTheme()));
+                                            }else{
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                                    tv.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
+                                                }
+                                            }
+                                        }else{
+                                            tv.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
+                                        }
+                                    }
+
                                     fbp.addView(playerOnGround);
 
                                     playerOnGround.setOnLongClickListener(new View.OnLongClickListener() {
@@ -509,7 +527,7 @@ public class SoccerScoreCardFragment extends Fragment {
                 tn2.setText(SoccerTeamFragment.Oteam+"'s Formation");
 
                 ListView stList = (ListView) view.findViewById(R.id.players_list);
-                sadapter = new PlayerListAdapter(Oplayers);
+                sadapter = new PlayerListAdapter(Oplayers, 2);
                 stList.setAdapter(sadapter);
 
                 stList.setOnDragListener(new View.OnDragListener() {
@@ -570,6 +588,22 @@ public class SoccerScoreCardFragment extends Fragment {
                                     tv.setText(item.getText());
                                     playerOnGround.setX(event.getX());
                                     playerOnGround.setY(event.getY());
+
+                                    int yellow = stPlayersStats.get(item.getText()).get("yellow_cards");
+                                    if(yellow!=0){
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                                tv.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg, getActivity().getTheme()));
+                                            }else{
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                                    tv.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
+                                                }
+                                            }
+                                        }else{
+                                            tv.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
+                                        }
+                                    }
+
                                     sbp.addView(playerOnGround);
 
                                     playerOnGround.setOnLongClickListener(new View.OnLongClickListener() {
@@ -914,9 +948,11 @@ public class SoccerScoreCardFragment extends Fragment {
     class PlayerListAdapter extends BaseAdapter {
 
         ArrayList<String> lineup;
+        int team;
 
-        public PlayerListAdapter(ArrayList<String> lineup) {
+        public PlayerListAdapter(ArrayList<String> lineup, int team) {
             this.lineup = lineup;
+            this.team = team;
         }
 
         @Override
@@ -945,16 +981,60 @@ public class SoccerScoreCardFragment extends Fragment {
             }
             TextView username = (TextView) view.findViewById(R.id.player_username);
             username.setText(lineup.get(position));
+            int red = 0;
+            int yellow = 0;
+            if(team==1) {
+                red = ftPlayersStats.get(lineup.get(position)).get("red_cards");
+                yellow = ftPlayersStats.get(lineup.get(position)).get("yellow_cards");
+            }else{
+                red = stPlayersStats.get(lineup.get(position)).get("red_cards");
+                yellow = stPlayersStats.get(lineup.get(position)).get("yellow_cards");
+            }
+            if(red!=0){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        username.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_red_bg, getActivity().getTheme()));
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            username.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_red_bg));
+                        }
+                    }
+                }else{
+                    username.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_red_bg));
+                }
+            }else if(yellow!=0){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        username.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg, getActivity().getTheme()));
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            username.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
+                        }
+                    }
+                }else{
+                    username.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
+                }
+            }
             final View finalView = view;
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    movedView = v;
-                    movedView.setVisibility(View.GONE);
-                    ClipData.Item data = new ClipData.Item(lineup.get(position));
-                    ClipData dragData = new ClipData(lineup.get(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
-                    ShadowBuilder sb = new ShadowBuilder(finalView, getContext());
-                    v.startDrag(dragData, sb, null, 0);
+                    if(!finished) {
+                        int red = 0;
+                        if(team==1) {
+                            red = ftPlayersStats.get(lineup.get(position)).get("red_cards");
+                        }else{
+                            red = stPlayersStats.get(lineup.get(position)).get("red_cards");
+                        }
+                        if(red==0){
+                            movedView = v;
+                            movedView.setVisibility(View.GONE);
+                            ClipData.Item data = new ClipData.Item(lineup.get(position));
+                            ClipData dragData = new ClipData(lineup.get(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
+                            ShadowBuilder sb = new ShadowBuilder(finalView, getContext());
+                            v.startDrag(dragData, sb, null, 0);
+                        }
+                    }
                     return true;
                 }
             });
