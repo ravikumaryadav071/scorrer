@@ -176,15 +176,18 @@ public class SoccerScoreCardFragment extends Fragment {
                 TextView stn = (TextView) view.findViewById(R.id.second_team_name);
                 stn.setText(SoccerTeamFragment.Oteam);
 
-                TextView ftnp = (TextView) view.findViewById(R.id.first_team_name_poss);
+                final TextView ftnp = (TextView) view.findViewById(R.id.first_team_name_poss);
                 ftnp.setText(SoccerTeamFragment.team);
-                TextView stnp = (TextView) view.findViewById(R.id.second_team_name_poss);
+                final TextView stnp = (TextView) view.findViewById(R.id.second_team_name_poss);
                 stnp.setText(SoccerTeamFragment.Oteam);
 
                 final TextView ftp = (TextView) view.findViewById(R.id.first_team_poss);
                 final TextView stp = (TextView) view.findViewById(R.id.second_team_poss);
                 final TextView extraTimetv = (TextView) view.findViewById(R.id.extra_time);
                 final Button start = (Button) view.findViewById(R.id.start_pause);
+                final Button goal = (Button) view.findViewById(R.id.goal);
+                final TextView ftg = (TextView) view.findViewById(R.id.first_team_goals);
+                final TextView stg = (TextView) view.findViewById(R.id.second_team_goals);
 
                 if(possession==1){
                     stp.animate().translationX(-stp.getWidth());
@@ -230,7 +233,6 @@ public class SoccerScoreCardFragment extends Fragment {
                             start.callOnClick();
                             extraTimetv.setText("00:00");
                             final EditText input = new EditText(getContext());
-                            //input.setInputType();
                             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
                                     LinearLayout.LayoutParams.MATCH_PARENT);
@@ -259,6 +261,8 @@ public class SoccerScoreCardFragment extends Fragment {
                             extraTimetv.setText("");
                             if(half==1){
                                 half=2;
+                            }else if(half==2){
+                                start.setEnabled(false);
                             }
                         }
                         if(msg.getData().containsKey("time")){
@@ -344,6 +348,29 @@ public class SoccerScoreCardFragment extends Fragment {
                             }
                         }else{
                             Toast.makeText(getContext(), "Place players on field.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                goal.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            if(possession==1){
+                                String goals = ftg.getText().toString();
+                                int g = Integer.valueOf(goals);
+                                g++;
+                                ftg.setText(String.valueOf(g));
+                                getPlayer("goal", possession);
+                                stnp.callOnClick();
+                            }else{
+                                String goals = stg.getText().toString();
+                                int g = Integer.valueOf(goals);
+                                g++;
+                                stg.setText(String.valueOf(g));
+                                getPlayer("goal", possession);
+                                ftnp.callOnClick();
+                            }
                         }
                     }
                 });
@@ -594,6 +621,12 @@ public class SoccerScoreCardFragment extends Fragment {
                 break;
         }
         return view;
+    }
+
+    private void getPlayer(String action, int possession){
+
+        
+
     }
 
     class HighLightAdapter extends BaseAdapter{
