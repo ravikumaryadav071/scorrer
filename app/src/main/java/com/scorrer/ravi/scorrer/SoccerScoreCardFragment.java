@@ -246,7 +246,7 @@ public class SoccerScoreCardFragment extends Fragment {
                             new AlertDialog.Builder(getContext())
                                     .setTitle("Extra Time")
                                     .setMessage("Time")
-                                    .setIcon(R.drawable.edit_icon)
+                                    .setIcon(R.drawable.watch)
                                     .setCancelable(false)
                                     .setView(input)
                                     .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
@@ -266,6 +266,16 @@ public class SoccerScoreCardFragment extends Fragment {
                             start.callOnClick();
                             extraTimetv.setText("");
                             if(half==1){
+                                commentType = "HT";
+                                commentText = "Half Time.";
+                                commentTime = time.getText().toString();
+                                highlightTime.add(0, commentTime);
+                                highlightText.add(0,commentText);
+                                highlightType.add(0, commentType);
+                                highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
+                                commentTime = "";
+                                commentText = "";
+                                commentType = "";
                                 half=2;
                             }else if(half==2){
                                 start.setEnabled(false);
@@ -728,14 +738,27 @@ public class SoccerScoreCardFragment extends Fragment {
                         index = "yellow_cards";
                     }else if(action.equals("FOUL")){
                         index = "fouls";
-                    }else if(action.equals("CORNER")){
-                        return;
-                    }else if(action.equals("PENALTY")){
-                        return;
-                    }else if(action.equals("OWN GOAL")){
+                    }else {
+                        if (action.equals("CORNER")) {
+                            commentText = nextPlayer.get(0)+" takes the corner kick.";
+                            commentType="C";
+                        } else if (action.equals("PENALTY")) {
+                            commentText = nextPlayer.get(0)+" takes the penalty kick.";
+                            commentType="P";
+                        } else if (action.equals("OWN GOAL")) {
+                            commentText = nextPlayer.get(0)+" scores own goal.";
+                            commentType="G";
+                        }
+                        highlightTime.add(0, commentTime);
+                        highlightText.add(0,commentText);
+                        highlightType.add(0, commentType);
+                        highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
+                        commentTime = "";
+                        commentText = "";
+                        commentType = "";
+                        nextPlayer.clear();
                         return;
                     }
-
                     int value;
                     if(possess==1){
                         value = ftPlayersStats.get(nextPlayer.get(0)).get(index);
@@ -838,6 +861,13 @@ public class SoccerScoreCardFragment extends Fragment {
                         alert.cancel();
                         commentText += ".";
                         commentType = "G";
+                        highlightTime.add(0, commentTime);
+                        highlightText.add(0,commentText);
+                        highlightType.add(0, commentType);
+                        highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
+                        commentTime = "";
+                        commentText = "";
+                        commentType = "";
                     }else {
                         Toast.makeText(getContext(), "Can select max 1 player.", Toast.LENGTH_SHORT).show();
                     }
