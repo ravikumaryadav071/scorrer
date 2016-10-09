@@ -9,13 +9,12 @@
         android:orientation="horizontal">
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@drawable/soccer_commentry_bg"
             android:id="@+id/comment_type"
             android:textColor="@color/colorWhite"
             android:gravity="center"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:layout_height="match_parent"/>
+            android:textSize="@dimen/highlights_textsize"/>
     </LinearLayout>
     <TextView
         android:layout_width="0dp"

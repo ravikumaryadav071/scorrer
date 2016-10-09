@@ -19,6 +19,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.DragEvent;
@@ -52,6 +53,7 @@ public class SoccerScoreCardFragment extends Fragment {
     private static PlayerListAdapter fadapter;
     private static PlayerListAdapter sadapter;
     private HighLightAdapter highlightAdapter;
+    private StatsAdapter statsAdapter;
     private ArrayList<String> highlightType = new ArrayList<String>();
     private ArrayList<String> highlightText = new ArrayList<String>();
     private ArrayList<String> highlightTime = new ArrayList<String>();
@@ -89,61 +91,39 @@ public class SoccerScoreCardFragment extends Fragment {
         if(teamStats.size()==0) {
             HashMap<String, Integer> data = new HashMap<String, Integer>();
             data.put("possess", 0);
-            data = new HashMap<String, Integer>();
             data.put("goals", 0);
-            data = new HashMap<String, Integer>();
             data.put("corners", 0);
-            data = new HashMap<String, Integer>();
             data.put("off_sides", 0);
-            data = new HashMap<String, Integer>();
             data.put("fouls", 0);
-            data = new HashMap<String, Integer>();
             data.put("red_cards", 0);
-            data = new HashMap<String, Integer>();
             data.put("yellow_cards", 0);
             teamStats.add(data);
             data = new HashMap<String, Integer>();
             data.put("possess", 0);
-            data = new HashMap<String, Integer>();
             data.put("goals", 0);
-            data = new HashMap<String, Integer>();
             data.put("corners", 0);
-            data = new HashMap<String, Integer>();
             data.put("off_sides", 0);
-            data = new HashMap<String, Integer>();
             data.put("fouls", 0);
-            data = new HashMap<String, Integer>();
             data.put("red_cards", 0);
-            data = new HashMap<String, Integer>();
             data.put("yellow_cards", 0);
             teamStats.add(data);
             for (int i=0; i<SoccerTeamFragment.players.size(); i++) {
                 data = new HashMap<String, Integer>();
                 data.put("goals", 0);
-                data = new HashMap<String, Integer>();
                 data.put("assists", 0);
-                data = new HashMap<String, Integer>();
                 data.put("off_sides", 0);
-                data = new HashMap<String, Integer>();
                 data.put("fouls", 0);
-                data = new HashMap<String, Integer>();
                 data.put("red_cards", 0);
-                data = new HashMap<String, Integer>();
                 data.put("yellow_cards", 0);
                 ftPlayersStats.put(SoccerTeamFragment.players.get(i), data);
             }
             for (int i=0; i<SoccerTeamFragment.Oplayers.size(); i++) {
                 data = new HashMap<String, Integer>();
                 data.put("goals", 0);
-                data = new HashMap<String, Integer>();
                 data.put("assists", 0);
-                data = new HashMap<String, Integer>();
                 data.put("off_sides", 0);
-                data = new HashMap<String, Integer>();
                 data.put("fouls", 0);
-                data = new HashMap<String, Integer>();
                 data.put("red_cards", 0);
-                data = new HashMap<String, Integer>();
                 data.put("yellow_cards", 0);
                 stPlayersStats.put(SoccerTeamFragment.Oplayers.get(i), data);
             }
@@ -176,6 +156,8 @@ public class SoccerScoreCardFragment extends Fragment {
             case 1:
                 view = inflater.inflate(R.layout.soccer_score_card, null);
                 highlightAdapter = new HighLightAdapter(highlightType, highlightText, highlightTime);
+                statsAdapter = new StatsAdapter(teamStats);
+
                 time = (TextView) view.findViewById(R.id.time);
                 TextView ftn = (TextView) view.findViewById(R.id.first_team_name);
                 ftn.setText(SoccerTeamFragment.team);
@@ -258,6 +240,7 @@ public class SoccerScoreCardFragment extends Fragment {
                                                     extraTime = "0"+extraTime+":00";
                                                 }
                                                 start.callOnClick();
+                                                dialog.cancel();
                                             }
                                         }
                                     }).show();
@@ -375,20 +358,23 @@ public class SoccerScoreCardFragment extends Fragment {
                         if(started){
                             commentTime = time.getText().toString();
                             if(possession==1){
-                                String goals = ftg.getText().toString();
-                                int g = Integer.valueOf(goals);
+                                int g = teamStats.get(0).get("goals");
                                 g++;
+                                teamStats.get(0).remove("goals");
+                                teamStats.get(0).put("goals", g);
                                 ftg.setText(String.valueOf(g));
-                                getPlayer("goal", possession);
+                                getPlayer("GOAL", possession);
                                 stnp.callOnClick();
                             }else{
-                                String goals = stg.getText().toString();
-                                int g = Integer.valueOf(goals);
+                                int g = teamStats.get(1).get("goals");
                                 g++;
+                                teamStats.get(1).remove("goals");
+                                teamStats.get(1).put("goals", g);
                                 stg.setText(String.valueOf(g));
-                                getPlayer("goal", possession);
+                                getPlayer("GOAL", possession);
                                 ftnp.callOnClick();
                             }
+                            statsAdapter.notifyAdapter(teamStats);
                         }
                     }
                 });
@@ -877,6 +863,90 @@ public class SoccerScoreCardFragment extends Fragment {
 
     }
 
+    class StatsAdapter extends BaseAdapter{
+
+        ArrayList<HashMap<String, Integer>> teamStats;
+        ArrayList<String> stats;
+        ArrayList<String> statsH;
+        public StatsAdapter(ArrayList<HashMap<String, Integer>> teamStats) {
+            this.teamStats = teamStats;
+            stats.add("possess");
+            stats.add("goals");
+            stats.add("corners");
+            stats.add("off_sides");
+            stats.add("fouls");
+            stats.add("yellow_cards");
+            stats.add("red_cards");
+
+            statsH.add("POSSESSION");
+            statsH.add("GOALS");
+            statsH.add("CORNERS");
+            statsH.add("OFF SIDES");
+            statsH.add("FOULS");
+            statsH.add("YELLOW CARDS");
+            statsH.add("RED CARDS");
+        }
+
+        @Override
+        public int getCount() {
+            return stats.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return stats.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.soccer_stats, null);
+            }
+            else {
+                view = convertView;
+            }
+            TextView statType = (TextView) view.findViewById(R.id.statsType);
+            View ftsb = view.findViewById(R.id.ft_bar);
+            View stsb = view.findViewById(R.id.st_bar);
+            TextView fts = (TextView) view.findViewById(R.id.ft_stat);
+            TextView sts = (TextView) view.findViewById(R.id.st_stat);
+            statType.setText(statsH.get(position));
+            int val1 = teamStats.get(0).get(stats.get(position));
+            int val2 = teamStats.get(1).get(stats.get(position));
+            fts.setText(String.valueOf(val1));
+            sts.setText(String.valueOf(val2));
+            if(val1!=0||val2!=0){
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ftsb.getLayoutParams();
+                lp.weight = val1;
+                ftsb.setLayoutParams(lp);
+                lp = (LinearLayout.LayoutParams) stsb.getLayoutParams();
+                lp.weight = val1;
+                stsb.setLayoutParams(lp);
+            }else{
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ftsb.getLayoutParams();
+                lp.weight = 1;
+                ftsb.setLayoutParams(lp);
+                lp = (LinearLayout.LayoutParams) stsb.getLayoutParams();
+                lp.weight = 1;
+                stsb.setLayoutParams(lp);
+            }
+
+            return view;
+        }
+
+        public void notifyAdapter(ArrayList<HashMap<String, Integer>> teamStats) {
+            this.teamStats = teamStats;
+            notifyDataSetChanged();
+        }
+    }
+
     class SelectPlayerAdapter extends BaseAdapter{
 
         private ArrayList<String> players;
@@ -1066,6 +1136,7 @@ public class SoccerScoreCardFragment extends Fragment {
             int red = 0;
             int yellow = 0;
             if(team==1) {
+                Log.e("data", ftPlayersStats.toString());
                 red = ftPlayersStats.get(lineup.get(position)).get("red_cards");
                 yellow = ftPlayersStats.get(lineup.get(position)).get("yellow_cards");
             }else{
