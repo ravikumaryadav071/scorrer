@@ -187,19 +187,11 @@ public class SoccerScoreCardFragment extends Fragment {
                 final Button start = (Button) view.findViewById(R.id.start_pause);
 
                 if(possession==1){
-//                    stp.animate().translationX(-stp.getWidth());
-//                    stp.setVisibility(View.INVISIBLE);
-                    ftp.setVisibility(View.VISIBLE);
-                    ftp.animate().translationX(0);
-                    stp.setVisibility(View.VISIBLE);
                     stp.animate().translationX(-stp.getWidth());
+                    stp.setVisibility(View.INVISIBLE);
                 }else{
-//                    ftp.animate().translationX(ftp.getWidth());
-//                    ftp.setVisibility(View.INVISIBLE);
-                    stp.setVisibility(View.VISIBLE);
-                    stp.animate().translationX(0);
-                    ftp.setVisibility(View.VISIBLE);
                     ftp.animate().translationX(ftp.getWidth());
+                    ftp.setVisibility(View.INVISIBLE);
                 }
 
                 ftnp.setOnClickListener(new View.OnClickListener() {
@@ -238,6 +230,7 @@ public class SoccerScoreCardFragment extends Fragment {
                             start.callOnClick();
                             extraTimetv.setText("00:00");
                             final EditText input = new EditText(getContext());
+                            //input.setInputType();
                             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
                                     LinearLayout.LayoutParams.MATCH_PARENT);
@@ -256,6 +249,7 @@ public class SoccerScoreCardFragment extends Fragment {
                                                 if(extraTime.length()==1){
                                                     extraTime = "0"+extraTime+":00";
                                                 }
+                                                start.callOnClick();
                                             }
                                         }
                                     }).show();
