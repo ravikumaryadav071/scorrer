@@ -51,13 +51,17 @@ public class SoccerScoreCardFragment extends Fragment {
     private static PlayerListAdapter fadapter;
     private static PlayerListAdapter sadapter;
     private ArrayList<String> highlightType = new ArrayList<String>();
-    private ArrayList<String> highlightText = new ArrayList<String>();;
-    private ArrayList<String> highlightTime = new ArrayList<String>();;
+    private ArrayList<String> highlightText = new ArrayList<String>();
+    private ArrayList<String> highlightTime = new ArrayList<String>();
+    private String commentType = "";
+    private String commentText = "";
+    private String commentTime = "";
     private static ArrayList<HashMap<String, Integer>> teamStats = new ArrayList<HashMap<String, Integer>>();
     private static HashMap<String, HashMap<String, Integer>> ftPlayersStats = new HashMap<String, HashMap<String, Integer>>();
     private static HashMap<String, HashMap<String, Integer>> stPlayersStats = new HashMap<String, HashMap<String, Integer>>();
     private static HashMap<String, View> ftPlayersGroundView = new HashMap<String, View>();
     private static HashMap<String, View> stPlayersGroundView = new HashMap<String, View>();
+    private ArrayList<String> nextPlayer = new ArrayList<String>();
     private static String halfTime;
     private static String fullTime;
     private static boolean started = false;
@@ -356,6 +360,7 @@ public class SoccerScoreCardFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         if(started){
+                            commentTime = time.getText().toString();
                             if(possession==1){
                                 String goals = ftg.getText().toString();
                                 int g = Integer.valueOf(goals);
@@ -623,10 +628,233 @@ public class SoccerScoreCardFragment extends Fragment {
         return view;
     }
 
-    private void getPlayer(String action, int possession){
+    private void getPlayer(final String action, final int possess){
 
-        
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View view;
+        view = inflater.inflate(R.layout.choose_batsman, null);
+        TextView title = (TextView) view.findViewById(R.id.title);
+        TextView team_name = (TextView) view.findViewById(R.id.team_name);
+        ListView playersL = (ListView) view.findViewById(R.id.players_name);
+        Button proceed = (Button) view.findViewById(R.id.proceed);
+        SelectPlayerAdapter Fadapter;
+        if(action.equals("GOAL")){
+            title.setText("GOAL SCORER");
+        }else if(action.equals("OWN GOAL")){
+            title.setText("OWN GOAL SCORER");
+        }else if(action.equals("GOAL ASSISTANT")){
+            title.setText("GOAL ASSISTANT");
+        }else if(action.equals("OFF SIDE")){
+            title.setText("OFF SIDE");
+        }else if(action.equals("CORNER")){
+            title.setText("CORNER TAKER");
+        }else if(action.equals("RED CARD")){
+            title.setText("RED CARD");
+        }else if(action.equals("YELLOW CARD")){
+            title.setText("YELLOW CARD");
+        }else if(action.equals("FOUL")){
+            title.setText("FOUL");
+        }else if(action.equals("PENALTY")){
+            title.setText("PENALTY TAKER");
+        }
+        ArrayList<String> lineup;
+        if(possess==1){
+            team_name.setText(SoccerTeamFragment.team);
+            lineup = onField;
+        }else{
+            team_name.setText(SoccerTeamFragment.Oteam);
+            lineup = OonField;
+        }
+        Fadapter = new SelectPlayerAdapter(lineup);
+        playersL.setAdapter(Fadapter);
+        adBuilder.setCustomTitle(view);
+        final AlertDialog alert = adBuilder.create();
+        alert.show();
+        proceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(nextPlayer.size()==1) {
+                    alert.cancel();
+                    String index = null;
+                    if(action.equals("GOAL")){
+                        index = "goals";
+                    }else if(action.equals("GOAL ASSISTANT")){
+                        index = "assists";
+                    }else if(action.equals("OFF SIDE")){
+                        index = "off_sides";
+                    }else if(action.equals("RED CARD")){
+                        index = "red_cards";
+                    }else if(action.equals("YELLOW CARD")){
+                        index = "yellow_cards";
+                    }else if(action.equals("FOUL")){
+                        index = "fouls";
+                    }else if(action.equals("CORNER")){
+                        return;
+                    }else if(action.equals("PENALTY")){
+                        return;
+                    }else if(action.equals("OWN GOAL")){
+                        return;
+                    }
 
+                    int value;
+                    if(possess==1){
+                        value = ftPlayersStats.get(nextPlayer.get(0)).get(index);
+                        value++;
+                        ftPlayersStats.get(nextPlayer.get(0)).remove(index);
+                        ftPlayersStats.get(nextPlayer.get(0)).put(index, value);
+                    }else{
+                        value = stPlayersStats.get(nextPlayer.get(0)).get(index);
+                        value++;
+                        stPlayersStats.get(nextPlayer.get(0)).remove(index);
+                        stPlayersStats.get(nextPlayer.get(0)).put(index, value);
+                    }
+
+                    if(action.equals("GOAL")){
+                        commentText = nextPlayer.get(0)+" has scored a goal for ";
+                        if(possess==1){
+                            commentText += SoccerTeamFragment.team;
+                        }else{
+                            commentText += SoccerTeamFragment.Oteam;
+                        }
+                    }else if(action.equals("GOAL ASSISTANT")){
+                        commentText = " by assist of "+nextPlayer.get(0)+".";
+                        commentType = "G";
+                    }else if(action.equals("OFF SIDE")){
+                        commentText = nextPlayer.get(0)+" found off side.";
+                        commentType = "O";
+                    }else if(action.equals("RED CARD")){
+                        commentText = nextPlayer.get(0)+" booked for red card.";
+                        commentType = "R";
+                    }else if(action.equals("YELLOW CARD")){
+                        if(value==1) {
+                            commentText = nextPlayer.get(0) + " booked for yellow card.";
+                            View v1;
+                            if(possess==1){
+                                v1 = ftPlayersGroundView.get(nextPlayer.get(0));
+                            }else{
+                                v1 = stPlayersGroundView.get(nextPlayer.get(0));
+                            }
+                            TextView pu = (TextView) v1.findViewById(R.id.player_username);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    pu.setBackground(getActivity().getResources().getDrawable(R.drawable.player_yellow_bg, getActivity().getTheme()));
+                                }else{
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                        pu.setBackground(getActivity().getResources().getDrawable(R.drawable.player_yellow_bg));
+                                    }
+                                }
+                            }else{
+                                pu.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_yellow_bg));
+                            }
+                        }else{
+                            commentText = "Second yellow makes it red for "+nextPlayer.get(0) + ".";
+                        }
+                        commentType = "Y";
+                        index = "red_cards";
+                        if(possess==1){
+                            int value1 = ftPlayersStats.get(nextPlayer.get(0)).get(index);
+                            value1++;
+                            ftPlayersStats.get(nextPlayer.get(0)).remove(index);
+                            ftPlayersStats.get(nextPlayer.get(0)).put(index, value);
+                        }else{
+                            int value1 = stPlayersStats.get(nextPlayer.get(0)).get(index);
+                            value1++;
+                            stPlayersStats.get(nextPlayer.get(0)).remove(index);
+                            stPlayersStats.get(nextPlayer.get(0)).put(index, value);
+                        }
+                    }else if(action.equals("FOUL")){
+                        commentText = "Foul by "+nextPlayer.get(0)+".";
+                        commentType = "F";
+                    }
+
+                    if(action.equals("red_cards")||(action.equals("yellow_cards") && value==2)){
+                        if(possess==1){
+                            View v1 = ftPlayersGroundView.get(nextPlayer.get(0));
+                            v1.setVisibility(View.GONE);
+                            ftPlayersGroundView.remove(nextPlayer.get(0));
+                            players.add(nextPlayer.get(0));
+                            onField.remove(nextPlayer.get(0));
+                            fadapter.notifyAdapter(players);
+                        }else{
+                            View v1 = stPlayersGroundView.get(nextPlayer.get(0));
+                            v1.setVisibility(View.GONE);
+                            stPlayersGroundView.remove(nextPlayer.get(0));
+                            Oplayers.add(nextPlayer.get(0));
+                            OonField.remove(nextPlayer.get(0));
+                            sadapter.notifyAdapter(Oplayers);
+                        }
+                    }
+
+                }else{
+                    if(action.equals("GOAL ASSISTANT")){
+                        alert.cancel();
+                    }else {
+                        Toast.makeText(getContext(), "Can select max 1 player.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+    }
+
+    class SelectPlayerAdapter extends BaseAdapter{
+
+        private ArrayList<String> players;
+
+        public SelectPlayerAdapter(ArrayList<String> players){
+            this.players = players;
+        }
+
+        @Override
+        public int getCount() {
+            return players.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return players.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view;
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = inflater.inflate(R.layout.team_mates_sugg, null);
+            }
+            else {
+                view = convertView;
+            }
+            final TextView plN = (TextView) view.findViewById(R.id.team_mate);
+            plN.setText(players.get(position));
+            plN.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!nextPlayer.contains(plN.getText().toString())) {
+                        nextPlayer.add(plN.getText().toString());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            v.setBackgroundColor(getResources().getColor(R.color.grayBG, null));
+                        } else {
+                            v.setBackgroundColor(getResources().getColor(R.color.grayBG));
+                        }
+                    }else{
+                        nextPlayer.remove(plN.getText().toString());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            v.setBackgroundColor(getResources().getColor(R.color.colorWhite, null));
+                        } else {
+                            v.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                        }
+                    }
+                }
+            });
+            return view;
+        }
     }
 
     class HighLightAdapter extends BaseAdapter{
