@@ -158,6 +158,11 @@ public class SoccerScoreCardFragment extends Fragment {
                 highlightAdapter = new HighLightAdapter(highlightType, highlightText, highlightTime);
                 statsAdapter = new StatsAdapter(teamStats);
 
+                ListView statsList = (ListView) view.findViewById(R.id.statistics);
+                statsList.setAdapter(statsAdapter);
+                ListView highlightList = (ListView) view.findViewById(R.id.highlights);
+                highlightList.setAdapter(highlightAdapter);
+
                 time = (TextView) view.findViewById(R.id.time);
                 TextView ftn = (TextView) view.findViewById(R.id.first_team_name);
                 ftn.setText(SoccerTeamFragment.team);
@@ -176,6 +181,15 @@ public class SoccerScoreCardFragment extends Fragment {
                 final Button goal = (Button) view.findViewById(R.id.goal);
                 final TextView ftg = (TextView) view.findViewById(R.id.first_team_goals);
                 final TextView stg = (TextView) view.findViewById(R.id.second_team_goals);
+
+                Button penalty = (Button) view.findViewById(R.id.penalty);
+                Button corner = (Button) view.findViewById(R.id.corner);
+                Button foul = (Button) view.findViewById(R.id.foul);
+                Button redCard = (Button) view.findViewById(R.id.red_card);
+                Button yellowCard = (Button) view.findViewById(R.id.yellow_card);
+                Button offSide = (Button) view.findViewById(R.id.off_side);
+                Button throwIn = (Button) view.findViewById(R.id.throw_in);
+                Button ownGoal = (Button) view.findViewById(R.id.own_goal);
 
                 if(possession==1){
                     stp.animate().translationX(-stp.getWidth());
@@ -376,6 +390,100 @@ public class SoccerScoreCardFragment extends Fragment {
                             }
                             statsAdapter.notifyAdapter(teamStats);
                         }
+                    }
+                });
+
+                corner.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                int c = teamStats.get(0).get("corners");
+                                c++;
+                                teamStats.get(0).remove("corners");
+                                teamStats.get(0).put("corners", c);
+                                getPlayer("CORNER", possession);
+                            }else{
+                                int c = teamStats.get(1).get("corners");
+                                c++;
+                                teamStats.get(1).remove("corners");
+                                teamStats.get(1).put("corners", c);
+                                getPlayer("CORNER", possession);
+                            }
+                            statsAdapter.notifyAdapter(teamStats);
+                        }
+                    }
+                });
+
+                penalty.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                getPlayer("PENALTY", possession);
+                            }else{
+                                getPlayer("PENALTY", possession);
+                            }
+                        }
+                    }
+                });
+
+                foul.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                int f = teamStats.get(0).get("fouls");
+                                f++;
+                                teamStats.get(0).remove("fouls");
+                                teamStats.get(0).put("fouls", f);
+                                getPlayer("FOUL", possession);
+                                stnp.callOnClick();
+                            }else{
+                                int f = teamStats.get(1).get("fouls");
+                                f++;
+                                teamStats.get(1).remove("fouls");
+                                teamStats.get(1).put("fouls", f);
+                                getPlayer("FOUL", possession);
+                                ftnp.callOnClick();
+                            }
+                            statsAdapter.notifyAdapter(teamStats);
+                        }
+                    }
+                });
+
+                ownGoal.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(started){
+                            commentTime = time.getText().toString();
+                            if(possession==1){
+                                int g = teamStats.get(1).get("goals");
+                                g++;
+                                teamStats.get(1).remove("goals");
+                                teamStats.get(1).put("goals", g);
+                                stg.setText(String.valueOf(g));
+                                getPlayer("OWN GOAL", possession);
+                            }else{
+                                int g = teamStats.get(0).get("goals");
+                                g++;
+                                teamStats.get(0).remove("goals");
+                                teamStats.get(0).put("goals", g);
+                                ftg.setText(String.valueOf(g));
+                                getPlayer("OWN GOAL", possession);
+                            }
+                            statsAdapter.notifyAdapter(teamStats);
+                        }
+                    }
+                });
+
+                redCard.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        
                     }
                 });
                 break;
@@ -693,13 +801,16 @@ public class SoccerScoreCardFragment extends Fragment {
         }else if(action.equals("PENALTY")){
             title.setText("PENALTY TAKER");
         }
-        ArrayList<String> lineup;
+        ArrayList<String> lineup = new ArrayList<String>();
         if(possess==1){
             team_name.setText(SoccerTeamFragment.team);
-            lineup = onField;
+            lineup.addAll(onField);
         }else{
             team_name.setText(SoccerTeamFragment.Oteam);
-            lineup = OonField;
+            lineup.addAll(onField);
+        }
+        if(action.equals("GOAL ASSISTANT")){
+            lineup.remove(nextPlayer.get(0));
         }
         Fadapter = new SelectPlayerAdapter(lineup);
         playersL.setAdapter(Fadapter);
@@ -767,7 +878,7 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                         getPlayer("GOAL ASSISTANT", possess);
                     }else if(action.equals("GOAL ASSISTANT")){
-                        commentText = " by assist of "+nextPlayer.get(0)+".";
+                        commentText += " by assist of "+nextPlayer.get(0)+".";
                         commentType = "G";
                     }else if(action.equals("OFF SIDE")){
                         commentText = nextPlayer.get(0)+" found off side.";
@@ -834,13 +945,15 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                     }
 
-                    highlightTime.add(0, commentTime);
-                    highlightText.add(0,commentText);
-                    highlightType.add(0, commentType);
-                    highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
-                    commentTime = "";
-                    commentText = "";
-                    commentType = "";
+                    if(!action.equals("GOAL")) {
+                        highlightTime.add(0, commentTime);
+                        highlightText.add(0, commentText);
+                        highlightType.add(0, commentType);
+                        highlightAdapter.notifyAdapter(highlightType, highlightText, highlightTime);
+                        commentTime = "";
+                        commentText = "";
+                        commentType = "";
+                    }
                     nextPlayer.clear();
                 }else{
                     if(action.equals("GOAL ASSISTANT")){
@@ -866,8 +979,8 @@ public class SoccerScoreCardFragment extends Fragment {
     class StatsAdapter extends BaseAdapter{
 
         ArrayList<HashMap<String, Integer>> teamStats;
-        ArrayList<String> stats;
-        ArrayList<String> statsH;
+        ArrayList<String> stats = new ArrayList<String>();
+        ArrayList<String> statsH = new ArrayList<String>();
         public StatsAdapter(ArrayList<HashMap<String, Integer>> teamStats) {
             this.teamStats = teamStats;
             stats.add("possess");
@@ -927,7 +1040,7 @@ public class SoccerScoreCardFragment extends Fragment {
                 lp.weight = val1;
                 ftsb.setLayoutParams(lp);
                 lp = (LinearLayout.LayoutParams) stsb.getLayoutParams();
-                lp.weight = val1;
+                lp.weight = val2;
                 stsb.setLayoutParams(lp);
             }else{
                 LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ftsb.getLayoutParams();
