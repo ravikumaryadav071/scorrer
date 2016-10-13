@@ -41,27 +41,23 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:background="@color/grayBG_6"/>
-                <LinearLayout
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/colorWhite"
-                        android:id="@+id/time"
-                        android:paddingLeft="4dp"
-                        android:paddingRight="4dp"
-                        android:text="00:00"
-                        android:textSize="@dimen/score_board_titles_size"
-                        android:layout_weight="1"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/redBG_2"
-                        android:id="@+id/extra_time"
-                        android:textSize="@dimen/score_board_titles_size"/>
-                </LinearLayout>
+                    android:textColor="@color/colorWhite"
+                    android:id="@+id/time"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:text="00:00"
+                    android:textSize="@dimen/score_board_titles_size"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/redBG_2"
+                    android:id="@+id/extra_time"
+                    android:textSize="@dimen/score_board_extra_time_size"
+                    android:text=""
+                    android:gravity="center"/>
                 <TextView
                     android:layout_width="1dp"
                     android:layout_height="match_parent"

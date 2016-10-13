@@ -233,6 +233,7 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                         if(msg.getData().containsKey("startExtra")){
                             start.callOnClick();
+                            Log.e("hereWe", msg.getData().getString("time"));
                             extraTimetv.setText("00:00");
                             final EditText input = new EditText(getContext());
                             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -251,8 +252,9 @@ public class SoccerScoreCardFragment extends Fragment {
                                             if(!input.getText().toString().trim().equals("")){
                                                 extraTime = input.getText().toString().trim();
                                                 if(extraTime.length()==1){
-                                                    extraTime = "0"+extraTime+":00";
+                                                    extraTime = "0"+extraTime;
                                                 }
+                                                extraTime += ":00";
                                                 start.callOnClick();
                                                 dialog.cancel();
                                             }
@@ -309,6 +311,7 @@ public class SoccerScoreCardFragment extends Fragment {
                                             if (sTemp.equals(halfTime) || sTemp.equals(fullTime)) {
                                                 if(!extraTime.equals("00:00")) {
                                                     temp = sxTemp.split(":");
+                                                    Log.e("hereWe", "goagain");
                                                 }
                                             }
                                             int m = Integer.valueOf(temp[0]);
@@ -338,12 +341,10 @@ public class SoccerScoreCardFragment extends Fragment {
                                                     } else {
                                                         b.putString("extraTime", stime);
                                                     }
+                                                }else{
+                                                    b.putString("startExtra", "extraTime");
+                                                    b.putString("time", stime);
                                                 }
-                                            }
-
-                                            if((stime.equals(halfTime)||stime.equals(fullTime)) && extraTime.equals("00:00")){
-                                                b.putString("startExtra", "extraTime");
-                                                b.putString("time", stime);
                                             }else{
                                                 b.putString("time", stime);
                                             }

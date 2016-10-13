@@ -31,4 +31,5 @@
     <dimen name="team_formation_team_name_text_size">4dp</dimen>
     <dimen name="player_onfield_textsize">15dp</dimen>
     <dimen name="highlights_textsize">15dp</dimen>
+    <dimen name="score_board_extra_time_size">15dp</dimen>
 </resources>
