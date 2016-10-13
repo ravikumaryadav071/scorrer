@@ -536,17 +536,17 @@ public class SoccerScoreCardFragment extends Fragment {
                         if(started){
                             commentTime = time.getText().toString();
                             if(possession==1){
-                                int o = teamStats.get(0).get("off_side");
+                                int o = teamStats.get(0).get("off_sides");
                                 o++;
-                                teamStats.get(0).remove("off_side");
-                                teamStats.get(0).put("off_side", o);
+                                teamStats.get(0).remove("off_sides");
+                                teamStats.get(0).put("off_sides", o);
                                 getPlayer("OFF SIDE", possession);
                                 stnp.callOnClick();
                             }else{
-                                int o = teamStats.get(1).get("off_side");
+                                int o = teamStats.get(1).get("off_sides");
                                 o++;
-                                teamStats.get(1).remove("off_side");
-                                teamStats.get(1).put("off_side", o);
+                                teamStats.get(1).remove("off_sides");
+                                teamStats.get(1).put("off_sides", o);
                                 getPlayer("OFF SIDE", possession);
                                 ftnp.callOnClick();
                             }
