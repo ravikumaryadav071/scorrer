@@ -263,6 +263,7 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                         if(msg.getData().containsKey("endExtra")){
                             start.callOnClick();
+                            extraTime = "00:00";
                             extraTimetv.setText("");
                             if(half==1){
                                 commentType = "HT";
@@ -333,20 +334,20 @@ public class SoccerScoreCardFragment extends Fragment {
                                             Message msg = handler.obtainMessage();
                                             Bundle b = new Bundle();
 
-                                            if(sTemp.equals(halfTime) || sTemp.equals(fullTime)){
-                                                if(!extraTime.equals("00:00")) {
-                                                    if (stime.equals(extraTime)) {
-                                                        b.putString("endExtra", "extraTime");
-                                                        b.putString("extraTime", stime);
-                                                    } else {
-                                                        b.putString("extraTime", stime);
-                                                    }
-                                                }else{
+                                            if(extraTime.equals("00:00")) {
+                                                if (stime.equals(halfTime) || stime.equals(fullTime)) {
                                                     b.putString("startExtra", "extraTime");
+                                                    b.putString("time", stime);
+                                                }else{
                                                     b.putString("time", stime);
                                                 }
                                             }else{
-                                                b.putString("time", stime);
+                                                if (stime.equals(extraTime)) {
+                                                    b.putString("endExtra", "extraTime");
+                                                    b.putString("extraTime", stime);
+                                                } else {
+                                                    b.putString("extraTime", stime);
+                                                }
                                             }
                                             msg.setData(b);
                                             handler.sendMessage(msg);
