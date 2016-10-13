@@ -73,7 +73,7 @@ public class SoccerScoreCardFragment extends Fragment {
     private static int possession;
     private int half = 1;
     private View movedView = null;
-    private TextView time;
+    private static TextView time;
     private String extraTime = "00:00";
     private static boolean finished = false;
     public static SoccerScoreCardFragment newInstance(int page_no){
@@ -1032,6 +1032,22 @@ public class SoccerScoreCardFragment extends Fragment {
                         }
                     }
 
+                    if((action.equals("YELLOW CARD") && value==2)){
+                        int value2;
+                        if(possess==1){
+                            value2 = teamStats.get(0).get("red_cards");
+                            value2++;
+                            teamStats.get(0).remove("red_cards");
+                            teamStats.get(0).put("red_cards", value2);
+                        }else{
+                            value2 = teamStats.get(1).get("red_cards");
+                            value2++;
+                            teamStats.get(1).remove("red_cards");
+                            teamStats.get(1).put("red_cards", value2);
+                        }
+                        statsAdapter.notifyAdapter(teamStats);
+                    }
+
                     if(!action.equals("GOAL")) {
                         highlightTime.add(0, commentTime);
                         highlightText.add(0, commentText);
@@ -1379,6 +1395,18 @@ public class SoccerScoreCardFragment extends Fragment {
                 }else{
                     view.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_yellow_bg));
                 }
+            }else{
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        view.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_bg, getActivity().getTheme()));
+                    }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            view.setBackground(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_bg));
+                        }
+                    }
+                }else{
+                    view.setBackgroundDrawable(getActivity().getResources().getDrawable(R.drawable.player_team_formation_entry_bg));
+                }
             }
             final View finalView = view;
             view.setOnLongClickListener(new View.OnLongClickListener() {
@@ -1386,18 +1414,28 @@ public class SoccerScoreCardFragment extends Fragment {
                 public boolean onLongClick(View v) {
                     if(!finished) {
                         int red = 0;
+                        int pof = teamSize;
+                        int cpof = 0;
                         if(team==1) {
                             red = ftPlayersStats.get(lineup.get(position)).get("red_cards");
+                            pof -= teamStats.get(0).get("red_cards");
+                            cpof = onField.size();
                         }else{
                             red = stPlayersStats.get(lineup.get(position)).get("red_cards");
+                            pof -= teamStats.get(0).get("red_cards");
+                            cpof = OonField.size();
                         }
                         if(red==0){
-                            movedView = v;
-                            movedView.setVisibility(View.GONE);
-                            ClipData.Item data = new ClipData.Item(lineup.get(position));
-                            ClipData dragData = new ClipData(lineup.get(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
-                            ShadowBuilder sb = new ShadowBuilder(finalView, getContext());
-                            v.startDrag(dragData, sb, null, 0);
+                            if(time.getText().toString().equals("00:00") || (cpof<pof) ) {
+                                movedView = v;
+                                movedView.setVisibility(View.GONE);
+                                ClipData.Item data = new ClipData.Item(lineup.get(position));
+                                ClipData dragData = new ClipData(lineup.get(position), new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, data);
+                                ShadowBuilder sb = new ShadowBuilder(finalView, getContext());
+                                v.startDrag(dragData, sb, null, 0);
+                            }else{
+                                Toast.makeText(getContext(), "To substitute firstly remove player from ground.", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                     return true;
